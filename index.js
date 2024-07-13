@@ -33,6 +33,12 @@ const server = http.createServer((req, res) => {
       const queryString = `Name: ${name}\nEmail: ${email}\nMessage: ${message}\n\n`;
 
       // TODO: Append user query in "queries.txt"
+      fs.appendFile("queries.txt", queryString, (err) => {
+        if (err) throw err;
+        console.log(
+          `\nQuery saved!\n\nUser name: ${name}\nQuery: ${message}\n`
+        );
+      });
 
       // Nodemailer mailOptions
       const mailOptions = {
@@ -44,6 +50,13 @@ const server = http.createServer((req, res) => {
 
       // TODO: Use Nodemailer to send confirmation email
       // TODO: Emit "mailSent" event
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          customEvent.mailSent(email);
+        }
+      });
 
       res.end("Query received");
     });
